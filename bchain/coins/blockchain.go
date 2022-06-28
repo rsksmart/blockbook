@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/juju/errors"
+	"github.com/golang/glog"
 	"github.com/trezor/blockbook/bchain"
 	"github.com/trezor/blockbook/bchain/coins/bch"
 	"github.com/trezor/blockbook/bchain/coins/bellcoin"
@@ -52,6 +53,7 @@ import (
 	"github.com/trezor/blockbook/bchain/coins/viacoin"
 	"github.com/trezor/blockbook/bchain/coins/vipstarcoin"
 	"github.com/trezor/blockbook/bchain/coins/zec"
+	"github.com/trezor/blockbook/bchain/coins/rsk"
 	"github.com/trezor/blockbook/common"
 )
 
@@ -126,6 +128,7 @@ func init() {
 	BlockChainFactories["BitZeny"] = bitzeny.NewBitZenyRPC
 	BlockChainFactories["Trezarcoin"] = trezarcoin.NewTrezarcoinRPC
 	BlockChainFactories["ECash"] = ecash.NewECashRPC
+	BlockChainFactories["RSK"] = rsk.NewRSKRPC
 }
 
 // GetCoinNameFromConfig gets coin name and coin shortcut from config file
@@ -148,29 +151,41 @@ func GetCoinNameFromConfig(configfile string) (string, string, string, error) {
 
 // NewBlockChain creates bchain.BlockChain and bchain.Mempool for the coin passed by the parameter coin
 func NewBlockChain(coin string, configfile string, pushHandler func(bchain.NotificationType), metrics *common.Metrics) (bchain.BlockChain, bchain.Mempool, error) {
+	glog.Error("ReadFile")
 	data, err := ioutil.ReadFile(configfile)
+	glog.Error("File read. Data:")
+	glog.Error(data)
 	if err != nil {
 		return nil, nil, errors.Annotatef(err, "Error reading file %v", configfile)
 	}
+	glog.Error("unmarshal")
 	var config json.RawMessage
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		return nil, nil, errors.Annotatef(err, "Error parsing file %v", configfile)
 	}
+	glog.Error("BlockChainFactories")
 	bcf, ok := BlockChainFactories[coin]
+	glog.Error(ok)
 	if !ok {
 		return nil, nil, errors.New(fmt.Sprint("Unsupported coin '", coin, "'. Must be one of ", reflect.ValueOf(BlockChainFactories).MapKeys()))
 	}
+	glog.Error("bcf")
 	bc, err := bcf(config, pushHandler)
 	if err != nil {
+		glog.Error("Error en bcf")
 		return nil, nil, err
 	}
+	glog.Error("Initializing")
 	err = bc.Initialize()
+	glog.Error("Initialized")
 	if err != nil {
 		return nil, nil, err
 	}
+	glog.Error("CreateMempool")
 	mempool, err := bc.CreateMempool(bc)
 	if err != nil {
+		glog.Error("Error creating mempool")
 		return nil, nil, err
 	}
 	return &blockChainWithMetrics{b: bc, m: metrics}, &mempoolWithMetrics{mempool: mempool, m: metrics}, nil
