@@ -22,6 +22,7 @@ type Config struct {
 	} `json:"coin"`
 	Ports struct {
 		BackendRPC          int `json:"backend_rpc"`
+		BackendWS           int `json:"backend_ws"`
 		BackendMessageQueue int `json:"backend_message_queue"`
 		BlockbookInternal   int `json:"blockbook_internal"`
 		BlockbookPublic     int `json:"blockbook_public"`

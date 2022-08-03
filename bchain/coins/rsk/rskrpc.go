@@ -38,7 +38,7 @@ type Configuration struct {
 	CoinName                    string `json:"coin_name"`
 	CoinShortcut                string `json:"coin_shortcut"`
 	RPCURL                      string `json:"rpc_url"`
-	WSURL                       string `json:"ws_url_template"`
+	WSURL                       string `json:"ws_url"`
 	RPCTimeout                  int    `json:"rpc_timeout"`
 	BlockAddressesToKeep        int    `json:"block_addresses_to_keep"`
 	MempoolTxTimeoutHours       int    `json:"mempoolTxTimeoutHours"`
@@ -75,8 +75,6 @@ func NewRSKRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)
 	if err != nil {
 		return nil, errors.Annotatef(err, "Invalid configuration file")
 	}
-	//TODO: make it work from config
-	c.WSURL = "ws://localhost:4445/websocket"
 	// keep at least 100 mappings block->addresses to allow rollback
 	if c.BlockAddressesToKeep < 100 {
 		c.BlockAddressesToKeep = 100

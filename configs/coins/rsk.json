@@ -7,6 +7,7 @@
   },
   "ports": {
     "backend_rpc": 4444,
+    "backend_ws": 4445,
     "backend_message_queue": 0,
     "backend_p2p": 5050,
     "backend_http": 4444,
@@ -15,7 +16,7 @@
   },
   "ipc": {
     "rpc_url_template": "http://127.0.0.1:{{.Ports.BackendRPC}}",
-    "ws_url_template": "ws://127.0.0.1:4445/websocket",
+    "ws_url_template": "ws://127.0.0.1:{{.Ports.BackendWS}}/websocket",
     "rpc_timeout": 60
   },
   "backend": {
