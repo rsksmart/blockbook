@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 	"strings"
+	"net/http"
+	urlParser "net/url"
 
 	ethereum "github.com/ethereum/go-ethereum"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -159,7 +161,21 @@ func NewRSKRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)
 func openRPC(url string) (*rpc.Client, *ethclient.Client, error) {
 	glog.Error("openRPC url:")
 	glog.Error(url)
-	rc, err := rpc.Dial(url)
+	
+	parsedUrl, err := urlParser.Parse(url);
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var rc *rpc.Client
+	if parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https" {
+		// DisableKeepAlives to fix connection reset issue
+		rc, err = rpc.DialHTTPWithClient(url, &http.Client { Transport : &http.Transport{
+			DisableKeepAlives: true,
+		}})
+	} else {
+		rc, err = rpc.Dial(url)
+	}
 	if err != nil {
 		return nil, nil, err
 	}
