@@ -1,0 +1,29 @@
+{
+    "blockHeight": 4524386,
+    "blockHash": "0x34f4476dbe231ff8e016e52e29d535892dde1bb7918bf974211657840775cfd2",
+    "blockTime": 1659578127,
+    "blockSize": 2191,
+    "blockTxs": [
+        "0x8a88c063ca9622f8b882307eb5a8e68db1f36639c782cd3b69034b9ac6a2e7eb"
+    ],
+    "txDetails": {
+        "0x8a88c063ca9622f8b882307eb5a8e68db1f36639c782cd3b69034b9ac6a2e7eb": {
+            "txid": "0x8a88c063ca9622f8b882307eb5a8e68db1f36639c782cd3b69034b9ac6a2e7eb",
+            "blocktime": 1659578127,
+            "time": 1659578127,
+            "vin": [
+                {
+                    "addresses": ["0x0000000000000000000000000000000000000000"]
+                }
+            ],
+            "vout": [
+                {
+                    "value": 0,
+                    "scriptPubKey": {
+                        "addresses": ["0x0000000000000000000000000000000001000008"]
+                    }
+                }
+            ]
+        }
+    }
+}
