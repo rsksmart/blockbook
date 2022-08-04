@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"strconv"
-	"sync"
-	"time"
-	"strings"
 	"net/http"
 	urlParser "net/url"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
 
 	ethereum "github.com/ethereum/go-ethereum"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -51,7 +51,7 @@ type EthereumRPC struct {
 	client               *ethclient.Client
 	rpc                  *rpc.Client
 	wsclient             *ethclient.Client
-	wsrpc	             *rpc.Client
+	wsrpc                *rpc.Client
 	timeout              time.Duration
 	Parser               *EthereumParser
 	Mempool              *bchain.MempoolEthereumType
@@ -159,8 +159,8 @@ func NewRSKRPC(config json.RawMessage, pushHandler func(bchain.NotificationType)
 func openRPC(url string) (*rpc.Client, *ethclient.Client, error) {
 	glog.Error("openRPC url:")
 	glog.Error(url)
-	
-	parsedUrl, err := urlParser.Parse(url);
+
+	parsedUrl, err := urlParser.Parse(url)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -168,7 +168,7 @@ func openRPC(url string) (*rpc.Client, *ethclient.Client, error) {
 	var rc *rpc.Client
 	if parsedUrl.Scheme == "http" || parsedUrl.Scheme == "https" {
 		// DisableKeepAlives to fix connection reset issue
-		rc, err = rpc.DialHTTPWithClient(url, &http.Client { Transport : &http.Transport{
+		rc, err = rpc.DialHTTPWithClient(url, &http.Client{Transport: &http.Transport{
 			DisableKeepAlives: true,
 		}})
 	} else {
@@ -450,7 +450,7 @@ func toBlockNumArg(number *big.Int) string {
 type StringInt int
 
 func stripHex(hexaString string) string {
-	 // replace 0x or 0X with empty String
+	// replace 0x or 0X with empty String
 	numberStr := strings.Replace(hexaString, "0x", "", -1)
 	numberStr = strings.Replace(numberStr, "0X", "", -1)
 	return numberStr
@@ -461,15 +461,15 @@ func (st *StringInt) UnmarshalJSON(b string) error {
 	glog.Error(b)
 	glog.Error(stripHex(b))
 	//glog.Error(strconv.ParseInt(stripHex(b), 16, 64))
-        value, err := strconv.ParseInt(stripHex(b), 16, 64)
+	value, err := strconv.ParseInt(stripHex(b), 16, 64)
 	glog.Error(value)
-        if err != nil {
-            ///the string might not be of integer type
-            ///so return an error
-            return err
+	if err != nil {
+		///the string might not be of integer type
+		///so return an error
+		return err
 
-        }
-        *st = StringInt(value)
+	}
+	*st = StringInt(value)
 	return nil
 }
 
@@ -483,11 +483,11 @@ type RSKHeader struct {
 	TxHash      ethcommon.Hash    `json:"transactionsRoot"`
 	ReceiptHash ethcommon.Hash    `json:"receiptsRoot"`
 	//Bloom       []byte            `json:"logsBloom"`
-	Difficulty  string            `json:"difficulty"`
-	Number      string            `json:"number"`
-	GasLimit    string            `json:"gasLimit"`
-	GasUsed     string            `json:"gasUsed"`
-	Time        string            `json:"timestamp"`
+	Difficulty string `json:"difficulty"`
+	Number     string `json:"number"`
+	GasLimit   string `json:"gasLimit"`
+	GasUsed    string `json:"gasUsed"`
+	Time       string `json:"timestamp"`
 	//Extra       []byte            `json:"extraData"`
 }
 
@@ -837,7 +837,7 @@ func (b *EthereumRPC) GetTransaction(txid string) (*bchain.Tx, error) {
 	var btx *bchain.Tx
 	if tx.BlockNumber == "" {
 		// mempool tx
-		glog.Error("RSK ethTxToTx")
+		glog.Error("RSK ethTxToTx mempool tx")
 		btx, err = b.Parser.ethTxToTx(tx, nil, 0, 0, true)
 		if err != nil {
 			return nil, errors.Annotatef(err, "txid %v", txid)
@@ -873,6 +873,8 @@ func (b *EthereumRPC) GetTransaction(txid string) (*bchain.Tx, error) {
 		}
 		glog.Error("RSK ethTxToTx")
 		btx, err = b.Parser.ethTxToTx(tx, &receipt, time, confirmations, true)
+		glog.Error("CoinSpecificData")
+		glog.Error(btx.CoinSpecificData)
 		if err != nil {
 			return nil, errors.Annotatef(err, "txid %v", txid)
 		}

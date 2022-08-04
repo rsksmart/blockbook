@@ -59,6 +59,10 @@ func (c *TxCache) GetTransaction(txid string) (*bchain.Tx, int, error) {
 	tx, err = c.chain.GetTransaction(txid)
 	glog.Error("c.chain.GetTransaction")
 	glog.Error(tx)
+	glog.Error("coin specific data here:")
+	glog.Error("-----")
+	glog.Error(tx.CoinSpecificData)
+	glog.Error("-----")
 	if err != nil {
 		return nil, 0, err
 	}

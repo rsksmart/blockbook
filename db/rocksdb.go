@@ -1615,12 +1615,16 @@ func (d *RocksDB) GetTx(txid string) (*bchain.Tx, uint32, error) {
 		return nil, 0, err
 	}
 	val, err := d.db.GetCF(d.ro, d.cfh[cfTransactions], key)
+	glog.Error("GetCF:")
 	if err != nil {
 		return nil, 0, err
 	}
 	defer val.Free()
 	data := val.Data()
+	glog.Error("GetCF data")
+	glog.Error(data)
 	if len(data) > 4 {
+		glog.Error("calling UnpackTx")
 		return d.chainParser.UnpackTx(data)
 	}
 	return nil, 0, nil

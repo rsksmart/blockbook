@@ -141,6 +141,9 @@ func (p *EthereumParser) ethTxToTx(tx *rpcTransaction, receipt *rpcReceipt, bloc
 	}
 	glog.Error("ct:")
 	glog.Error(ct)
+	glog.Error("GasUsed:")
+	glog.Error(ct.Receipt.GasUsed)
+	glog.Error(ct.Tx.BlockNumber)
 	vs, err := hexutil.DecodeBig(tx.Value)
 	if err != nil {
 		glog.Error("Error decoding Value")
@@ -378,6 +381,7 @@ func (p *EthereumParser) PackTx(tx *bchain.Tx, height uint32, blockTime int64) (
 
 // UnpackTx unpacks transaction from byte array
 func (p *EthereumParser) UnpackTx(buf []byte) (*bchain.Tx, uint32, error) {
+	glog.Error("UnpackTx")
 	var pt ProtoCompleteTransaction
 	err := proto.Unmarshal(buf, &pt)
 	if err != nil {
@@ -423,7 +427,12 @@ func (p *EthereumParser) UnpackTx(buf []byte) (*bchain.Tx, uint32, error) {
 			Logs:    logs,
 		}
 	}
+	glog.Error("rr")
+	glog.Error(rr)
 	tx, err := p.ethTxToTx(&rt, rr, int64(pt.BlockTime), 0, false)
+	glog.Error("UnpackTx final:")
+	glog.Error(tx)
+	glog.Error(tx.CoinSpecificData)
 	if err != nil {
 		return nil, 0, err
 	}
