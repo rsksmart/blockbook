@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/golang/glog"
 	"github.com/golang/protobuf/proto"
 	"github.com/juju/errors"
 	"github.com/trezor/blockbook/bchain"
 	"golang.org/x/crypto/sha3"
-	"github.com/golang/glog"
 )
 
 // EthereumTypeAddressDescriptorLen - in case of EthereumType, the AddressDescriptor has fixed length
@@ -273,7 +273,16 @@ func hexEncodeBig(b []byte) string {
 func (p *EthereumParser) PackTx(tx *bchain.Tx, height uint32, blockTime int64) ([]byte, error) {
 	var err error
 	var n uint64
+	glog.Error("RSK PackTx:")
+	glog.Error(tx)
+	glog.Error("tx.CoinSpecificData")
+	glog.Error(tx.CoinSpecificData)
+	glog.Error("height")
+	glog.Error(height)
 	r, ok := tx.CoinSpecificData.(completeTransaction)
+	glog.Error("is ok:")
+	glog.Error(ok)
+	glog.Error(r)
 	if !ok {
 		return nil, errors.New("Missing CoinSpecificData")
 	}
@@ -458,7 +467,14 @@ func (p *EthereumParser) GetChainType() bchain.ChainType {
 // GetHeightFromTx returns ethereum specific data from bchain.Tx
 func GetHeightFromTx(tx *bchain.Tx) (uint32, error) {
 	var bn string
+	glog.Error("RSK GetHeightFromTx:")
+	glog.Error(tx)
+	glog.Error("tx.CoinSpecificData")
+	glog.Error(tx.CoinSpecificData)
 	csd, ok := tx.CoinSpecificData.(completeTransaction)
+	glog.Error("is ok:")
+	glog.Error(ok)
+	glog.Error(csd)
 	if !ok {
 		return 0, errors.New("Missing CoinSpecificData")
 	}
