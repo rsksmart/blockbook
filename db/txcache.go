@@ -59,13 +59,13 @@ func (c *TxCache) GetTransaction(txid string) (*bchain.Tx, int, error) {
 	tx, err = c.chain.GetTransaction(txid)
 	glog.Error("c.chain.GetTransaction")
 	glog.Error(tx)
+	if err != nil {
+		return nil, 0, err
+	}
 	glog.Error("coin specific data here:")
 	glog.Error("-----")
 	glog.Error(tx.CoinSpecificData)
 	glog.Error("-----")
-	if err != nil {
-		return nil, 0, err
-	}
 	c.metrics.TxCacheEfficiency.With(common.Labels{"status": "miss"}).Inc()
 	// cache only confirmed transactions
 	if tx.Confirmations > 0 {
