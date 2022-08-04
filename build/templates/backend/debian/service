@@ -40,7 +40,7 @@ PrivateDevices=true
 
 {{if .Backend.ProtectMemory -}}
 # Deny the creation of writable and executable memory mappings.
-MemoryDenyWriteExecute=true
+MemoryDenyWriteExecute=false
 # RSK may need this in false
 {{end}}
 
