@@ -1606,7 +1606,11 @@ func (d *RocksDB) DatabaseSizeOnDisk() int64 {
 
 // GetTx returns transaction stored in db and height of the block containing it
 func (d *RocksDB) GetTx(txid string) (*bchain.Tx, uint32, error) {
+	glog.Error("GetTx")
 	key, err := d.chainParser.PackTxid(txid)
+	glog.Error(key)
+	glog.Error("err")
+	glog.Error(err)
 	if err != nil {
 		return nil, 0, err
 	}

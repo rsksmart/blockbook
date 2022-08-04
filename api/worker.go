@@ -117,18 +117,26 @@ func (w *Worker) GetSpendingTxid(txid string, n int) (string, error) {
 
 // GetTransaction reads transaction data from txid
 func (w *Worker) GetTransaction(txid string, spendingTxs bool, specificJSON bool) (*Tx, error) {
+	glog.Error("GetTransaction worker.go")
 	bchainTx, height, err := w.txCache.GetTransaction(txid)
+	glog.Error("bchainTx")
+	glog.Error(bchainTx)
+	glog.Error(height)
+	glog.Error("is error:")
+	glog.Error(err)
 	if err != nil {
 		if err == bchain.ErrTxNotFound {
 			return nil, NewAPIError(fmt.Sprintf("Transaction '%v' not found", txid), true)
 		}
 		return nil, NewAPIError(fmt.Sprintf("Transaction '%v' not found (%v)", txid, err), true)
 	}
+	glog.Error("Before GetTransactionFromBchainTx")
 	return w.GetTransactionFromBchainTx(bchainTx, height, spendingTxs, specificJSON)
 }
 
 // GetTransactionFromBchainTx reads transaction data from txid
 func (w *Worker) GetTransactionFromBchainTx(bchainTx *bchain.Tx, height int, spendingTxs bool, specificJSON bool) (*Tx, error) {
+	glog.Error("During GetTransactionFromBchainTx")
 	var err error
 	var ta *db.TxAddresses
 	var tokens []TokenTransfer

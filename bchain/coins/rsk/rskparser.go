@@ -139,6 +139,8 @@ func (p *EthereumParser) ethTxToTx(tx *rpcTransaction, receipt *rpcReceipt, bloc
 		Tx:      tx,
 		Receipt: receipt,
 	}
+	glog.Error("ct:")
+	glog.Error(ct)
 	vs, err := hexutil.DecodeBig(tx.Value)
 	if err != nil {
 		glog.Error("Error decoding Value")
