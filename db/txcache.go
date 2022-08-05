@@ -37,15 +37,11 @@ func NewTxCache(db *RocksDB, chain bchain.BlockChain, metrics *common.Metrics, i
 // GetTransaction returns transaction either from RocksDB or if not present from blockchain
 // it the transaction is confirmed, it is stored in the RocksDB
 func (c *TxCache) GetTransaction(txid string) (*bchain.Tx, int, error) {
-	glog.Error("db txcache GetTransaction")
 	var tx *bchain.Tx
 	var h uint32
 	var err error
 	if c.enabled {
 		tx, h, err = c.db.GetTx(txid)
-		glog.Error("c.db.GetTx tx")
-		glog.Error(tx)
-		glog.Error(err)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -58,15 +54,9 @@ func (c *TxCache) GetTransaction(txid string) (*bchain.Tx, int, error) {
 		}
 	}
 	tx, err = c.chain.GetTransaction(txid)
-	glog.Error("c.chain.GetTransaction")
-	glog.Error(tx)
 	if err != nil {
 		return nil, 0, err
 	}
-	glog.Error("coin specific data here:")
-	glog.Error("-----")
-	glog.Error(tx.CoinSpecificData)
-	glog.Error("-----")
 	c.metrics.TxCacheEfficiency.With(common.Labels{"status": "miss"}).Inc()
 	// cache only confirmed transactions
 	if tx.Confirmations > 0 {
@@ -92,17 +82,12 @@ func (c *TxCache) GetTransaction(txid string) (*bchain.Tx, int, error) {
 				h = ta.Height
 			}
 		} else if c.chainType == bchain.ChainEthereumType {
-			glog.Error("tx cache.go rsk GetHeightFromTx")
-			cName := c.chain.GetCoinName()
-			glog.Error("cName")
-			glog.Error(cName)
-			if cName == "RSK" {
+			coinName := c.chain.GetCoinName()
+			if coinName == "RSK" {
 				h, err = rsk.GetHeightFromTx(tx)
 			} else {
 				h, err = eth.GetHeightFromTx(tx)
 			}
-			glog.Error("err")
-			glog.Error(err)
 			if err != nil {
 				return nil, 0, err
 			}
