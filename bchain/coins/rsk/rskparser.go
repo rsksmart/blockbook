@@ -11,6 +11,7 @@ import (
 	"github.com/juju/errors"
 	"github.com/trezor/blockbook/bchain"
 	"golang.org/x/crypto/sha3"
+	eth "github.com/trezor/blockbook/bchain/coins/eth"
 )
 
 // EthereumTypeAddressDescriptorLen - in case of EthereumType, the AddressDescriptor has fixed length
@@ -475,14 +476,7 @@ func (p *EthereumParser) GetChainType() bchain.ChainType {
 // GetHeightFromTx returns ethereum specific data from bchain.Tx
 func GetHeightFromTx(tx *bchain.Tx) (uint32, error) {
 	var bn string
-	glog.Error("RSK GetHeightFromTx:")
-	glog.Error(tx)
-	glog.Error("tx.CoinSpecificData")
-	glog.Error(tx.CoinSpecificData)
 	csd, ok := tx.CoinSpecificData.(completeTransaction)
-	glog.Error("is ok:")
-	glog.Error(ok)
-	glog.Error(csd)
 	if !ok {
 		return 0, errors.New("Missing CoinSpecificData")
 	}
@@ -512,35 +506,14 @@ func (p *EthereumParser) EthereumTypeGetErc20FromTx(tx *bchain.Tx) ([]bchain.Erc
 	return r, nil
 }
 
-// TxStatus is status of transaction
-type TxStatus int
-
-// statuses of transaction
-const (
-	TxStatusUnknown = TxStatus(iota - 2)
-	TxStatusPending
-	TxStatusFailure
-	TxStatusOK
-)
-
-// EthereumTxData contains ethereum specific transaction data
-type EthereumTxData struct {
-	Status   TxStatus `json:"status"` // 1 OK, 0 Fail, -1 pending, -2 unknown
-	Nonce    uint64   `json:"nonce"`
-	GasLimit *big.Int `json:"gaslimit"`
-	GasUsed  *big.Int `json:"gasused"`
-	GasPrice *big.Int `json:"gasprice"`
-	Data     string   `json:"data"`
-}
-
 // GetEthereumTxData returns EthereumTxData from bchain.Tx
-func GetEthereumTxData(tx *bchain.Tx) *EthereumTxData {
+func GetEthereumTxData(tx *bchain.Tx) *eth.EthereumTxData {
 	return GetEthereumTxDataFromSpecificData(tx.CoinSpecificData)
 }
 
 // GetEthereumTxDataFromSpecificData returns EthereumTxData from coinSpecificData
-func GetEthereumTxDataFromSpecificData(coinSpecificData interface{}) *EthereumTxData {
-	etd := EthereumTxData{Status: TxStatusPending}
+func GetEthereumTxDataFromSpecificData(coinSpecificData interface{}) *eth.EthereumTxData {
+	etd := eth.EthereumTxData{Status: eth.TxStatusPending}
 	csd, ok := coinSpecificData.(completeTransaction)
 	if ok {
 		if csd.Tx != nil {
@@ -552,11 +525,11 @@ func GetEthereumTxDataFromSpecificData(coinSpecificData interface{}) *EthereumTx
 		if csd.Receipt != nil {
 			switch csd.Receipt.Status {
 			case "0x1":
-				etd.Status = TxStatusOK
+				etd.Status = eth.TxStatusOK
 			case "": // old transactions did not set status
-				etd.Status = TxStatusUnknown
+				etd.Status = eth.TxStatusUnknown
 			default:
-				etd.Status = TxStatusFailure
+				etd.Status = eth.TxStatusFailure
 			}
 			etd.GasUsed, _ = hexutil.DecodeBig(csd.Receipt.GasUsed)
 		}
