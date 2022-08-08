@@ -98,7 +98,7 @@
         "rpc": ["GetBlock", "GetBlockHash", "GetTransaction", "EstimateFee", "GetBestBlockHash", "GetBestBlockHeight",
                 "GetBlockHeader"]
     },
-    "rsk_testnet": {
+    "rsk": {
         "rpc": ["GetBlock", "GetBlockHash", "GetTransaction", "EstimateFee", "GetBestBlockHash", "GetBestBlockHeight",
                 "GetBlockHeader"]
     },
